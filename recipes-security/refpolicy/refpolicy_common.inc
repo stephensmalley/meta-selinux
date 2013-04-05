@@ -54,7 +54,7 @@ do_install() {
 	cat <<-EOF > ${D}${sysconfdir}/selinux/semanage.conf
 module-store = direct
 [setfiles]
-path = ${STAGING_DIR_NATIVE}${base_sbindir_native}/setfiles
+path = ${STAGING_DIR_NATIVE}${sbindir_native}/setfiles
 args = -q -c \$@ \$<
 [end]
 EOF
