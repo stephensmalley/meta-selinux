@@ -14,6 +14,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=2d5025d4aa3495befef8f17206a5b0a1"
 inherit autotools pkgconfig
 
 DEPENDS = "${@base_contains('DISTRO_FEATURES', 'pam', 'libpam', '', d)}"
+DEPENDS_virtclass-native = ""
 
 SRC_URI = "${SOURCEFORGE_MIRROR}/project/libcg/libcgroup/v.038/libcgroup-${PV}.tar.bz2"
 SRC_URI[md5sum] = "f0f7d4060bf36ccc19d75dbf4f1695db"
