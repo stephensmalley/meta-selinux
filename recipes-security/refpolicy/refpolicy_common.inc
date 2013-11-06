@@ -12,16 +12,29 @@ SRC_URI += "file://customizable_types \
 S = "${WORKDIR}/refpolicy"
 
 FILES_${PN} = "${sysconfdir}/selinux/${POLICY_NAME}/ \
-	${datadir}/selinux/${POLICY_NAME}/"
+	${datadir}/selinux/${POLICY_NAME}/*.pp"
+FILES_${PN}-dev =+ "${datadir}/selinux/${POLICY_NAME}/include/"
 
-DEPENDS += "checkpolicy-native policycoreutils-native m4-native python-native"
-RDEPENDS_${PN} += "policycoreutils selinux-config"
+DEPENDS += "checkpolicy-native policycoreutils-native m4-native"
+RDEPENDS_${PN} += "selinux-config"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit autotools
 
 PARALLEL_MAKE = ""
+
+POLICY_NAME ?= "${POLICY_TYPE}"
+POLICY_DISTRO ?= "redhat"
+POLICY_UBAC ?= "n"
+POLICY_UNK_PERMS ?= "allow"
+POLICY_DIRECT_INITRC ?= "n"
+POLICY_MONOLITHIC ?= "n"
+POLICY_CUSTOM_BUILDOPT ?= ""
+POLICY_QUIET ?= "y"
+POLICY_MLS_SENS ?= "16"
+POLICY_MLS_CATS ?= "1024"
+POLICY_MCS_CATS ?= "1024"
 
 EXTRA_OEMAKE += "NAME=${POLICY_NAME} \
 	TYPE=${POLICY_TYPE} \
@@ -38,7 +51,7 @@ EXTRA_OEMAKE += "NAME=${POLICY_NAME} \
 
 EXTRA_OEMAKE += "tc_usrbindir=${STAGING_BINDIR_NATIVE}"
 EXTRA_OEMAKE += "OUTPUT_POLICY=`${STAGING_BINDIR_NATIVE}/checkpolicy -V | cut -d' ' -f1`"
-EXTRA_OEMAKE += "CC='${BUILD_CC}' CFLAGS='${BUILD_CFLAGS}'"
+EXTRA_OEMAKE += "CC='${BUILD_CC}' CFLAGS='${BUILD_CFLAGS}' PYTHON='${PYTHON}'"
 
 do_compile() {
 	oe_runmake conf
@@ -57,10 +70,15 @@ module-store = direct
 path = ${STAGING_DIR_NATIVE}${base_sbindir_native}/setfiles
 args = -q -c \$@ \$<
 [end]
+[sefcontext_compile]
+path = ${STAGING_DIR_NATIVE}${sbindir_native}/sefcontext_compile
+args = \$@
+[end]
 EOF
 	mkdir -p ${D}${sysconfdir}/selinux/${POLICY_NAME}/policy
 	mkdir -p ${D}${sysconfdir}/selinux/${POLICY_NAME}/modules/active/modules
 	mkdir -p ${D}${sysconfdir}/selinux/${POLICY_NAME}/contexts/files
+	touch ${D}${sysconfdir}/selinux/${POLICY_NAME}/contexts/files/file_contexts.local
 	bzip2 -c ${D}${datadir}/selinux/${POLICY_NAME}/base.pp  > \
 		${D}${sysconfdir}/selinux/${POLICY_NAME}/modules/active/base.pp
 	for i in ${D}${datadir}/selinux/${POLICY_NAME}/*.pp; do
@@ -75,4 +93,7 @@ EOF
 
 	cat ${WORKDIR}/customizable_types >> \
 		${D}${sysconfdir}/selinux/${POLICY_NAME}/contexts/customizable_types
+
+	# install policy headers
+	oe_runmake install-headers DESTDIR=${D}
 }

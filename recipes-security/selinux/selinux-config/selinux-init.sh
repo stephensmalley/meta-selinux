@@ -6,8 +6,10 @@ CHCON=/usr/bin/chcon
 MATCHPATHCON=/usr/sbin/matchpathcon
 FIXFILES=/sbin/fixfiles
 RESTORECON=/sbin/restorecon
+SECON=/usr/bin/secon
+SETENFORCE=/usr/sbin/setenforce
 
-for i in ${CHCON} ${MATCHPATHCON} ${FIXFILES} ${RESTORECON} ; do
+for i in ${CHCON} ${MATCHPATHCON} ${FIXFILES} ${RESTORECON} ${SECON} ${SETENFORCE}; do
 	test -x $i && continue
 	echo "$i is missing in the system."
 	echo "Please add \"selinux=0\" in the kernel command line to disable SELinux."
@@ -51,19 +53,19 @@ fi
 
 # If first booting, the security context type of init would be
 # "kernel_t", and the whole file system should be relabeled.
-if [ "`/usr/bin/secon -t --pid 1`" = "kernel_t" ]; then
+if [ "`${SECON} -t --pid 1`" = "kernel_t" ]; then
 	echo "Checking SELinux security contexts:"
 	check_rootfs
 	echo " * First booting, filesystem will be relabeled..."
 	test -x /etc/init.d/auditd && /etc/init.d/auditd start
-	/usr/sbin/setenforce 0
-	${RESTORECON} -R /
-	${RESTORECON} /
+	${SETENFORCE} 0
+	${RESTORECON} -RF /
+	${RESTORECON} -F /
 	echo " * Relabel done, rebooting the system."
 	/sbin/reboot -f
 fi
 
 # Now, we should relabel /dev for most services.
-${RESTORECON} -R /dev
+${RESTORECON} -RF /dev
 
 exit 0

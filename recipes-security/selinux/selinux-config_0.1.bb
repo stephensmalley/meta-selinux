@@ -8,7 +8,7 @@ This is the configuration files for SELinux on WRLinux system.  \
 SECTION = "base"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
-PR = "r2"
+PR = "r3"
 
 SRC_URI = "file://selinux-init.sh"
 
@@ -43,3 +43,6 @@ SELINUXTYPE=${DEFAULT_POLICY}
 	install -m 0644 ${WORKDIR}/config ${D}/${sysconfdir}/selinux/
 }
 
+sysroot_stage_all_append () {
+	sysroot_stage_dir ${D}${sysconfdir} ${SYSROOT_DESTDIR}${sysconfdir}
+}

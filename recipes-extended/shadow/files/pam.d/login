@@ -39,9 +39,6 @@ session [success=ok ignore=ignore module_unknown=ignore default=bad] pam_selinux
 # 
 # parsing /etc/environment needs "readenv=1"
 session       required   pam_env.so readenv=1
-# locale variables are also kept into /etc/default/locale in etch
-# reading this file *in addition to /etc/environment* does not hurt
-session       required   pam_env.so readenv=1 envfile=/etc/default/locale
 
 # Standard Un*x authentication.
 auth       include      common-auth
@@ -93,6 +90,6 @@ session    include      common-session
 # SELinux needs to intervene at login time to ensure that the process
 # starts in the proper default security context. Only sessions which are
 # intended to run in the user's context should be run after this.
-session [success=ok ignore=ignore module_unknown=ignore default=bad] pam_selinux.so open select_context
+session [success=ok ignore=ignore module_unknown=ignore default=bad] pam_selinux.so open
 # When the module is present, "required" would be sufficient (When SELinux
 # is disabled, this returns success.)
