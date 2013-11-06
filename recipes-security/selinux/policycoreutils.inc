@@ -109,6 +109,7 @@ RDEPENDS_${BPN}-setsebool += "\
 	libsemanage \
 "
 RDEPENDS_${BPN} += "setools setools-libs ${BPN}-python"
+RPROVIDES_${BPN} += "${PACKAGES}"
 
 WARN_QA := "${@oe_filter_out('unsafe-references-in-scripts', '${WARN_QA}', d)}"
 ERROR_QA := "${@oe_filter_out('unsafe-references-in-scripts', '${ERROR_QA}', d)}"

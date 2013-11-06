@@ -31,7 +31,7 @@ DEPENDS += "python libsepol libselinux libxml2 python-native"
 
 PACKAGE_BEFORE_PN += "${PN}-libs"
 
-RPROVIDES_${PN} += "${PN}-console"
+RPROVIDES_${PN} += "${PN}-console ${PN}-libs"
 
 FILES_${PN}-dbg += "\
 	${libdir}/python${PYTHON_BASEVERSION}/site-packages/setools/.debug \
