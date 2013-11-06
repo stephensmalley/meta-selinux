@@ -113,8 +113,6 @@ RDEPENDS_${BPN} += "setools setools-libs ${BPN}-python"
 WARN_QA := "${@oe_filter_out('unsafe-references-in-scripts', '${WARN_QA}', d)}"
 ERROR_QA := "${@oe_filter_out('unsafe-references-in-scripts', '${ERROR_QA}', d)}"
 
-inherit pythonnative
-
 PACKAGES =+ "\
 	${PN}-audit2allow \
 	${PN}-chcat \

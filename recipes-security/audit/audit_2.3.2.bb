@@ -16,7 +16,7 @@ SRC_URI = "http://people.redhat.com/sgrubb/audit/audit-${PV}.tar.gz \
 	   file://auditd \
 	   file://fix-swig-host-contamination.patch"
 
-inherit autotools pythonnative update-rc.d
+inherit autotools update-rc.d
 
 UPDATERCPN = "auditd"
 INITSCRIPT_NAME = "auditd"
