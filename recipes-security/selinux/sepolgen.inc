@@ -1,4 +1,3 @@
-PRINC = "1"
 
 SUMMARY = "Python modules for supporting various SELinux utilities."
 DESCRIPTION = "\

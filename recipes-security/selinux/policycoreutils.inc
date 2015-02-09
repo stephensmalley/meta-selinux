@@ -1,4 +1,3 @@
-PRINC = "3"
 
 SUMMARY = "SELinux policy core utilities"
 DESCRIPTION = "policycoreutils contains the policy core utilities that are required \

@@ -1,4 +1,3 @@
-PRINC = "1"
 
 do_install_append () {
 	if [ ! ${D}${libdir} -ef ${D}${base_libdir} ]; then

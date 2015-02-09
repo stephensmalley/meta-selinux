@@ -1,4 +1,3 @@
-PRINC = "1"
 
 SUMMARY = "SELinux policy compiler"
 DESCRIPTION = "\

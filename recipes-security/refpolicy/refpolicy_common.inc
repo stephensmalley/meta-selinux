@@ -1,7 +1,7 @@
-PRINC = "4"
-
 SECTION = "base"
 LICENSE = "GPLv2"
+
+FILESEXTRAPATHS_prepend = "${THISDIR}/refpolicy-${PV}:"
 
 LIC_FILES_CHKSUM = "file://${S}/COPYING;md5=393a5ca445f6965873eca0259a17f833"
 
