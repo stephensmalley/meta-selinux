@@ -1,6 +1,6 @@
 DESCRIPTION = "Image with SELinux support" 
 
-IMAGE_FEATURES += "apps-console-core ssh-server-openssh"
+IMAGE_FEATURES += "splash ssh-server-openssh"
 
 LICENSE = "MIT"
 
