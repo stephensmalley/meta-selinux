@@ -4,5 +4,6 @@ selinux_set_labels () {
 }
 
 IMAGE_PREPROCESS_COMMAND += "selinux_set_labels ;"
+IMAGE_CMD_OPTS_tar += "--selinux"
 
 inherit core-image
