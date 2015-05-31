@@ -6,4 +6,5 @@ SRC_URI += " \
     file://misc-mke2fs.c-label-root-dir-and-cleanup.patch \
     file://misc-create_inode.c-label-fs-objects.patch \
     file://lib-ext2fs-ext2_ext_attr.h-add-xattr-index.patch \
+    file://misc-xattr-create-xattr-block.patch \
 "
