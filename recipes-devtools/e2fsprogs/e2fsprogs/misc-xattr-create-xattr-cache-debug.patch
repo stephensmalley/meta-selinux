@@ -1,0 +1,48 @@
+Add new functions to dump data about the xattr cache and nodes there in. Enable
+by defining XATTR_DEBUG.
+
+Signed-off-by: Philip Tricca <flihp@twobit.us>
+
+Index: e2fsprogs-1.42.9/misc/xattr.c
+===================================================================
+--- e2fsprogs-1.42.9.orig/misc/xattr.c
++++ e2fsprogs-1.42.9/misc/xattr.c
+@@ -127,6 +127,38 @@ xattr_pp_block (const struct ext2_ext_at
+ 	}
+ }
+ 
++/* Dump full xattr block (header, entries and values). */
++static inline void
++xattr_pp_node (const xattr_node_t *node)
++{
++	struct ext2_ext_attr_entry *e = NULL;
++
++	XATTR_STDERR ("xattr_node at: 0x%x\n  header at:   0x%x\n  block:       "
++		"0x%x\n  next:        0x%x\n", node, node->header, node->block, node->next);
++	xattr_pp_header (node->header);
++	for (e = FIRST_ENTRY(node->header);
++		!EXT2_EXT_IS_LAST_ENTRY(e);
++		e = EXT2_EXT_ATTR_NEXT(e))
++	{
++		xattr_pp_entry (e);
++		xattr_pp_value (VALUE(node->header, e), e->e_value_size);
++	}
++}
++
++/* Walk the list of nodes duping them one by one */
++static inline void
++xattr_pp_node_list (const xattr_node_t *node_list)
++{
++	xattr_node_t *node = NULL;
++
++	XATTR_STDERR ("dumping xattr node cache\n");
++	for (node = node_list; node != NULL; node = node->next) {
++		XATTR_STDERR ("node:\n");
++		xattr_pp_node (node);
++	}
++	XATTR_STDERR ("done dumping xattr_node cache\n");
++}
++
+ /* Free remaining resources after all files have been processed. */
+ void
+ xattr_cleanup ()
