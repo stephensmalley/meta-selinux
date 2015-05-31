@@ -1,0 +1,40 @@
+Add call to 'set_inode_xattr' to copy xattrs for the root directory in the file
+system. The 'populate_fs' function operates on every file in a directory so the
+root of the tree must be labeled independently.
+
+Add call to xattr_cleanup to deallocate xattr cache after populate_fs is done.
+
+Signed-off-by: Philip Tricca <flihp@twobit.us>
+
+Index: e2fsprogs-1.42.9/misc/mke2fs.c
+===================================================================
+--- e2fsprogs-1.42.9.orig/misc/mke2fs.c
++++ e2fsprogs-1.42.9/misc/mke2fs.c
+@@ -56,6 +56,7 @@ extern int optind;
+ #include "../version.h"
+ #include "quota/mkquota.h"
+ #include "create_inode.h"
++#include "xattr.h"
+ 
+ #define STRIDE_LENGTH 8
+ 
+@@ -2744,6 +2745,11 @@ no_journal:
+ 		hdlinks.count = 0;
+ 		current_fs = fs;
+ 		root = EXT2_ROOT_INO;
++		retval = set_inode_xattr (fs, EXT2_ROOT_INO, root_dir);
++		if (retval) {
++			fprintf(stderr, "%s", _("Error setting xattr for inode: 0x%x\n"), EXT2_ROOT_INO);
++			return retval;
++		}
+ 		retval = populate_fs(root, root_dir);
+ 		if (retval) {
+ 			fprintf(stderr, "%s",
+@@ -2751,6 +2757,7 @@ no_journal:
+ 			return retval;
+ 		} else if (!quiet)
+ 			printf("%s", _("done\n"));
++		xattr_cleanup();
+ 	}
+ 
+ 	if (!quiet)
