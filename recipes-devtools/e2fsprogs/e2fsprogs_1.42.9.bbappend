@@ -10,4 +10,5 @@ SRC_URI += " \
     file://misc-xattr-create-xattr-block-debug.patch \
     file://misc-xattr-create-xattr-block-node.patch \
     file://misc-xattr-create-xattr-cache.patch \
+    file://misc-xattr-create-xattr-cache-debug.patch \
 "
