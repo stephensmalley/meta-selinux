@@ -1,0 +1,79 @@
+Add a few functions to dump data about the xattr blocks we're making. Enable by
+defining XATTR_DEBUG. This produces lots of output when enabled so debug only.
+
+Signed-off-by: Philip Tricca <flihp@twobit.us>
+
+Index: e2fsprogs-1.42.9/misc/xattr.c
+===================================================================
+--- e2fsprogs-1.42.9.orig/misc/xattr.c
++++ e2fsprogs-1.42.9/misc/xattr.c
+@@ -72,6 +72,61 @@ xattr_free_node (xattr_node_t *node)
+ 	}
+ }
+ 
++/* Functions to prettyprint structures. Debug. */
++static inline void
++xattr_pp_header (const struct ext2_ext_attr_header *header)
++{
++	XATTR_STDERR ("Xattr header for xattr block at: 0x%x\n  h_magic:    0x%08x\n"
++		"  h_refcount: 0x%08x\n  h_blocks:   0x%08x\n  h_hash:     0x%08x\n",
++                header, header->h_magic, header->h_refcount, header->h_blocks,
++                header->h_hash);
++}
++
++static inline void
++xattr_pp_entry (const struct ext2_ext_attr_entry *entry)
++{
++	XATTR_STDERR ("Xattr entry for xattr at: 0x%x\n  e_name_len:    0x%02x\n  "
++		"e_name_index:  0x%02x\n  e_value_offs:  0x%04x\n  e_value_block: 0x%08x\n  "
++		"e_value_size:  0x%08x\n  e_hash:        0x%08x\nXattr name:\n  starts at: "
++		"0x%x\n  ends at:   0x%x\n", entry, entry->e_name_len, entry->e_name_index,
++		entry->e_value_offs, entry->e_value_block, entry->e_value_size,
++		entry->e_hash, EXT2_EXT_ATTR_NAME(entry),
++		EXT2_EXT_ATTR_NAME(entry) + entry->e_name_len);
++}
++
++/* No guarantees that xattr values will be printable. */
++static inline void
++xattr_pp_value (const char *value, size_t value_size)
++{
++	int i;
++
++	XATTR_STDERR ("value: \n  starts at: 0x%x\n  ends at:   0x%x\n  data:      \n",
++		value, value + value_size);
++	for (i = 0; i < value_size; ++i) {
++		if (isprint (value[i]) || value[i] == '\0')
++			XATTR_STDERR ("%c", value[i]);
++		else
++			XATTR_STDERR ("?");
++	}
++	XATTR_STDERR ("\n");
++}
++
++/* pretty print the whole xattr block: header and then each entry / value */
++static inline void
++xattr_pp_block (const struct ext2_ext_attr_header *header)
++{
++	struct ext2_ext_attr_entry *e = NULL;
++
++	xattr_pp_header (header);
++	for (e = FIRST_ENTRY (header);
++		!EXT2_EXT_IS_LAST_ENTRY (e);
++		e = EXT2_EXT_ATTR_NEXT (e))
++	{
++		xattr_pp_entry (e);
++		xattr_pp_value (VALUE (header, e), e->e_value_size);
++	}
++}
++
+ /* Free remaining resources after all files have been processed. */
+ void
+ xattr_cleanup ()
+@@ -287,6 +342,7 @@ next:
+ 			free (value);
+ 	}
+ 	XATTR_STDERR ("xattr_build_block: done building xattr buffer\n");
++	xattr_pp_block (*header);
+ out:
+ 	if (names)
+ 		free (names);
