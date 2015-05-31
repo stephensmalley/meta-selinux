@@ -1,0 +1,30 @@
+Add call to 'set_inode_xattrs' in populate_fs function. This rides on the
+recursive nature of populate_fs and copies xattrs for each file system object
+except for the root directory that we handle separately.
+
+Signed-off-by: Philip Tricca <flihp@twobit.us>
+
+Index: e2fsprogs-1.42.9/misc/create_inode.c
+===================================================================
+--- e2fsprogs-1.42.9.orig/misc/create_inode.c
++++ e2fsprogs-1.42.9/misc/create_inode.c
+@@ -1,5 +1,6 @@
+ #include "create_inode.h"
+ #include <limits.h>
++#include "xattr.h"
+ 
+ #if __STDC_VERSION__ < 199901L
+ # if __GNUC__ >= 2
+@@ -549,6 +550,12 @@ errcode_t populate_fs(ext2_ino_t parent_
+ 			return retval;
+ 		}
+ 
++		if ((retval = set_inode_xattr (current_fs, ino, name))) {
++			com_err(__func__, retval,
++				_("while setting xattrs for \"%s\""), name);
++			return retval;
++		}
++
+ 		/* Save the hardlink ino */
+ 		if (save_inode) {
+ 			/*
