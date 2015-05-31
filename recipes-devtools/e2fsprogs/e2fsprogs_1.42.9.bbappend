@@ -8,4 +8,5 @@ SRC_URI += " \
     file://lib-ext2fs-ext2_ext_attr.h-add-xattr-index.patch \
     file://misc-xattr-create-xattr-block.patch \
     file://misc-xattr-create-xattr-block-debug.patch \
+    file://misc-xattr-create-xattr-block-node.patch \
 "
