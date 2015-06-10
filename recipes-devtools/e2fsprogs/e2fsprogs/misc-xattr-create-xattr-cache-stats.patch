@@ -1,0 +1,56 @@
+Count comparisons, both integers and memcmps separately. Dump this data to stderr when the cleanup function is called.
+
+Signed-off-by: Philip Tricca <flihp@twobit.us>
+
+Index: e2fsprogs-1.42.9/misc/xattr.c
+===================================================================
+--- e2fsprogs-1.42.9.orig/misc/xattr.c
++++ e2fsprogs-1.42.9/misc/xattr.c
+@@ -25,6 +25,9 @@
+ #define XATTR_STDERR(fmt, args...) do {} while (0)
+ #endif
+ 
++static uint32_t int_cmp = 0;
++static uint32_t mem_cmp = 0;
++
+ /* nodes for simple linked list to track xattr blocks, calling it a cache
+  * would be a stretch ...
+  */
+@@ -86,6 +89,9 @@ xattr_cleanup ()
+                 xattr_free_node (tmp);
+ 	}
+ 	XATTR_STDERR ("Freed %d xattr_node_ts.\n", count);
++	fprintf (stderr, "cache stats:\n");
++	fprintf (stderr, "  int_cmp: %u\n", int_cmp);
++	fprintf (stderr, "  mem_cmp: %u\n", mem_cmp);
+ }
+ 
+ /* Get value for named xattr from file at path.
+@@ -306,17 +312,27 @@ xattr_compare_entry (struct ext2_ext_att
+ {
+ 	int ret = 0;
+ 
++	int_cmp += 7;
++        fprintf (stderr, "int_cmp now: %u\n", int_cmp);
+ 	if (entry_a->e_hash != entry_b->e_hash ||
+ 		entry_a->e_name_index != entry_b->e_name_index ||
+ 		entry_a->e_name_len != entry_b->e_name_len ||
+ 		entry_a->e_value_size != entry_b->e_value_size)
+ 	{
++		++mem_cmp;
++                fprintf (stderr, "mem_cmp now: %u\n", mem_cmp);
++		++int_cmp;
++                fprintf (stderr, "int_cmp now: %u\n", int_cmp);
+ 		if (ret = memcmp (EXT2_EXT_ATTR_NAME(entry_a),
+ 				EXT2_EXT_ATTR_NAME(entry_b),
+ 				MIN (entry_a->e_name_len, entry_b->e_name_len)))
+ 			return ret;
++		int_cmp += 3;
++                fprintf (stderr, "int_cmp now: %u\n", int_cmp);
+ 		if (entry_a->e_value_block != 0 || entry_b->e_value_block != 0)
+ 			return -EIO;
++		++mem_cmp;
++                fprintf (stderr, "mem_cmp now: %u\n", mem_cmp);
+ 		return memcmp (VALUE(header_a, entry_a),
+ 				VALUE(header_b, entry_b),
+ 				MIN(entry_a->e_value_size, entry_b->e_value_size));
