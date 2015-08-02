@@ -1,0 +1,3 @@
+define KFEATURE_DESCRIPTION "Enable Security Enhanced Linux (SELinux)"
+
+kconf non-hardware selinux.cfg
