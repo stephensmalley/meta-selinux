@@ -1,0 +1,20 @@
+Index: git/misc/create_inode.c
+===================================================================
+--- git.orig/misc/create_inode.c
++++ git/misc/create_inode.c
+@@ -890,8 +890,15 @@ errcode_t populate_fs(ext2_filsys fs, ex
+ 		return retval;
+ 	}
+ 
++	retval = set_inode_xattr(fs, root, source_dir);
++	if (retval) {
++		com_err(__func__, retval,
++			_("while setting xattrs for \"%s\""), source_dir);
++		goto out;
++	}
+ 	retval = __populate_fs(fs, parent_ino, source_dir, root, &hdlinks);
+ 
++out:
+ 	free(hdlinks.hdl);
+ 	return retval;
+ }
