@@ -7,6 +7,8 @@ SRCREV_FORMAT = "refpolicy.refpolicy-contrib"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/refpolicy-git:"
 
+DEFAULT_PREFERENCE = "-1"
+
 # Fix file contexts for Poky
 SRC_URI += "file://poky-fc-subs_dist.patch \
             file://poky-fc-update-alternatives_sysvinit.patch \
